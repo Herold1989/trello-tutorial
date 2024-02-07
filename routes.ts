@@ -17,6 +17,8 @@ export const publicRoutes = [
 export const authRoutes = [
     "/auth/login",
     "/auth/register",
+    "/auth/select-org",
+    "/auth/select-members",
     "/auth/error",
     "/auth/reset",
     "/auth/new-password",

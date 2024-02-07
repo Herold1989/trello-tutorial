@@ -28,6 +28,14 @@ export default auth((req) => {
     return null;
   }
 
+  // You cannot see the Landing Page once you are logged in
+  if (isPublicRoute) {
+    if (isLoggedIn) {
+      return Response.redirect(new URL(DEFAULT_LOGIN_REDIRECT, nextUrl));
+    }
+    return null;
+  }
+
   if (!isLoggedIn && !isPublicRoute) {
     let callbackUrl = nextUrl.pathname;
     if (nextUrl.search) {
