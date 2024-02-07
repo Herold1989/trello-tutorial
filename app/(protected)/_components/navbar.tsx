@@ -52,12 +52,12 @@ export const Navbar = () => {
           >
             <Link href="/admin">Admin</Link>
           </Button>
-          <Button
+          {/* <Button
             asChild
             variant={pathname === "/settings" ? "default" : "outline"}
           >
             <Link href="/settings">Settings</Link>
-          </Button>
+          </Button> */}
         </div>
 
         <div className="hidden md:block">
