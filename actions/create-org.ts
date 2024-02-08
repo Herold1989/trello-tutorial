@@ -4,10 +4,17 @@ import { db } from "@/lib/db";
 import { OrganizationSchema } from "@/schemas";
 import { getOrganizationByName } from "@/data/organization";
 
+interface CreateOrgResponse {
+  error?: string;
+  success?: string;
+  organizationId?: string; // Include this property to handle successful organization creation
+}
+
 export const createOrg = async (
   values: z.infer<typeof OrganizationSchema>
-): Promise<{ error?: string; success?: string }> => {
+): Promise<CreateOrgResponse> => { // Use the newly defined interface here
   const validatedFields = OrganizationSchema.safeParse(values);
+
 
   if (!validatedFields.success) {
     return { error: "Invalid Fields" };
@@ -26,8 +33,12 @@ export const createOrg = async (
     },
   });
 
-  if (createOrganization) {
-    return { success: "Organization created!" };
+   // Check if the creation was successful and return the appropriate response
+   if (createOrganization) {
+    return { 
+      success: "Organization created!",
+      organizationId: createOrganization.id // Now correctly typed to be expected in the response
+    };
   } else {
     return { error: "Something went wrong - No organization created!" };
   }

@@ -15,12 +15,25 @@ enum UserRole {
 }
 
 model Organization {
-  id           String @id @default(cuid())
-  organization String? @unique
+  id                String              @id @default(cuid())
+  organization      String?             @unique
+  OrganizationEmail OrganizationEmail[]
+  users             User[] // Relation to User
+}
+
+model OrganizationEmail {
+  id             String       @id @default(cuid())
+  email          String
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([email, organizationId])
 }
 
 model User {
   id                    String                 @id @default(cuid())
+  organizationId        String? // Foreign key
+  organization          Organization?          @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   name                  String?
   email                 String?                @unique
   emailVerified         DateTime?

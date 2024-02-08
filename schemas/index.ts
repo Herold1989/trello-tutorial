@@ -95,7 +95,22 @@ export const DeleteUserSchema = z.object({
 });
 
 export const OrganizationSchema = z.object({
-  organization: z.string().min(1, {
-    message: "Please provide a company name",
+  organization: z.string().min(1, "Please provide a company name"),
+});
+
+export const EmailSubmissionSchema = z.object({
+  organizationId: z.string(),
+  emails: z.array(z.object({
+    email: z.string().email(),
+  })).min(1, "At least one email is required."),
+});
+
+export const EmailTextareaSchema = z.object({
+  emailsText: z.string().refine((value) => {
+    // Split by commas or spaces into an array and validate each part as an email.
+    const emails = value.split(/[\s,]+/).filter(Boolean); // Split and remove empty strings
+    return emails.every(email => z.string().email().safeParse(email).success);
+  }, {
+    message: "Please enter valid email addresses, separated by commas or spaces.",
   }),
 });
