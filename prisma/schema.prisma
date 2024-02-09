@@ -18,7 +18,6 @@ model Organization {
   id           String  @id @default(cuid())
   organization String? @unique
   slug         String  @unique
-
   OrganizationEmail OrganizationEmail[]
   users             User[] // Relation to User
 }

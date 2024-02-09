@@ -17,7 +17,7 @@ export const Navbar = () => {
           </LoginButton>
           <Button size="sm" asChild>
             <Link href="/auth/register">
-              Get Taskify for free
+              Register
             </Link>
           </Button>
         </div>
