@@ -96,6 +96,7 @@ export const DeleteUserSchema = z.object({
 
 export const OrganizationSchema = z.object({
   organization: z.string().min(1, "Please provide a company name"),
+  slug: z.string(),
 });
 
 export const EmailSubmissionSchema = z.object({

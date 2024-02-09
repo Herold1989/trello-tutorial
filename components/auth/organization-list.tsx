@@ -1,10 +1,16 @@
 "use client";
 import * as z from "zod";
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { OrganizationSchema, EmailTextareaSchema } from "@/schemas";
 import { Input } from "@/components/ui/input";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import {
   Form,
   FormControl,
@@ -21,12 +27,21 @@ import { FormSuccess } from "@/components/form-success";
 import { createOrg } from "@/actions/create-org";
 import { addEmailsToOrganization } from "@/actions/add-members";
 import { Textarea } from "../ui/textarea";
+import { Info } from 'lucide-react';
+
+
+const createSlug = (name: string) =>
+  name
+    .toLowerCase()
+    .replace(/\s+/g, "-")
+    .replace(/[^a-z0-9-]/g, "");
 
 export const OrganizationList = () => {
   const [organizationCreated, setOrganizationCreated] = useState(false);
   const [organizationId, setOrganizationId] = useState("");
   const [error, setError] = useState<string | undefined>("");
   const [success, setSuccess] = useState<string | undefined>("");
+  const [slugUrl, setSlugUrl] = useState("");
 
   const [isPending, startTransition] = useTransition();
 
@@ -40,6 +55,20 @@ export const OrganizationList = () => {
       emailsText: "",
     },
   });
+
+  useEffect(() => {
+    const subscription = formOrg.watch((value, { name }) => {
+      if (name === "organization") {
+        // Ensure value.organization is treated as a string, even if it's undefined
+        const organizationName = value.organization || "";
+        const newSlug = createSlug(organizationName);
+        setSlugUrl(newSlug);
+        // Optionally, directly set the slug value in the form if needed for submission
+        formOrg.setValue("slug", newSlug, { shouldValidate: true });
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, [formOrg]);
 
   const onSubmitOrganization = async (
     values: z.infer<typeof OrganizationSchema>
@@ -85,7 +114,7 @@ export const OrganizationList = () => {
     <CardWrapper
       headerLabel={
         organizationCreated
-          ? "Step 2: Add Emails to Organization"
+          ? "Step 2: Add Your Email / Invite Members"
           : "Step 1: Create Your Organization"
       }
       backButtonLabel="Already have an organization?"
@@ -109,13 +138,44 @@ export const OrganizationList = () => {
                         {...field}
                         disabled={isPending}
                         placeholder="Muster GmbH"
-                        type="organization"
+                        onChange={(e) => {
+                          // Handle the organization name input change
+                          const newSlug = createSlug(e.target.value); // Generate the slug based on input
+                          setSlugUrl(newSlug); // Update the slug state
+                          formOrg.setValue("slug", newSlug, {
+                            shouldValidate: true,
+                          }); // Optionally set the slug value in form
+                          field.onChange(e); // Ensure the original handler is called
+                        }}
+                        type="text" // Changed to "text" if "organization" type was a typo
                       />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
+              {/* Display the generated slug URL */}
+              <FormItem>
+                <FormLabel>Slug-URL</FormLabel>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger>
+                    <Info size={16} />
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Your individual organization URL</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                <FormControl>
+                  <Input
+                    value={slugUrl} // Display the generated slug URL
+                    disabled={true} // Make the input disabled
+                    placeholder="muster-gmbh"
+                    type="text" // Assuming it's just a text type for display
+                  />
+                </FormControl>
+              </FormItem>
             </div>
             <FormError message={error} />
             <FormSuccess message={success} />

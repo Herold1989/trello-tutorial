@@ -12,17 +12,22 @@ interface CreateOrgResponse {
 
 export const createOrg = async (
   values: z.infer<typeof OrganizationSchema>
-): Promise<CreateOrgResponse> => { // Use the newly defined interface here
+): Promise<CreateOrgResponse> => {
+  // Use the newly defined interface here
   const validatedFields = OrganizationSchema.safeParse(values);
-
 
   if (!validatedFields.success) {
     return { error: "Invalid Fields" };
   }
 
-  const { organization } = validatedFields.data;
+  const { organization, slug } = validatedFields.data;
   // Check if user already exists
-  const existingOrganization = await getOrganizationByName(organization);
+  const existingOrganization = await db.organization.findFirst({
+    where: {
+      OR: [{ organization }, { slug }],
+    },
+  });
+
   if (existingOrganization) {
     return { error: "This company already exists!" };
   }
@@ -30,14 +35,15 @@ export const createOrg = async (
   const createOrganization = await db.organization.create({
     data: {
       organization,
+      slug, // Include the slug in the data for creation
     },
   });
 
-   // Check if the creation was successful and return the appropriate response
-   if (createOrganization) {
-    return { 
+  // Check if the creation was successful and return the appropriate response
+  if (createOrganization) {
+    return {
       success: "Organization created!",
-      organizationId: createOrganization.id // Now correctly typed to be expected in the response
+      organizationId: createOrganization.id, // Now correctly typed to be expected in the response
     };
   } else {
     return { error: "Something went wrong - No organization created!" };
