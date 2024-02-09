@@ -3,14 +3,10 @@ import Prisma, * as PrismaScope from "@prisma/client";
 import * as z from "zod";
 import { EmailSubmissionSchema } from "@/schemas";
 import { db } from "@/lib/db";
+import { sendVerificationEmailOrganization } from "@/lib/mail";
+import { generateVerificationTokenOrganization } from "@/lib/tokens";
 
-export const PrismaClientKnownRequestError =
-  Prisma?.Prisma.PrismaClientKnownRequestError ||
-  PrismaScope?.Prisma.PrismaClientKnownRequestError;
-
-export const addEmailsToOrganization = async (
-  inputData: z.infer<typeof EmailSubmissionSchema>
-) => {
+export const addEmailsToOrganization = async (inputData: z.infer<typeof EmailSubmissionSchema>) => {
   const validatedData = EmailSubmissionSchema.safeParse(inputData);
   if (!validatedData.success) {
     return { error: "Invalid input data." };
@@ -18,54 +14,41 @@ export const addEmailsToOrganization = async (
 
   const { organizationId, emails } = validatedData.data;
 
-  // Step 1: Ensure all emails are associated with a user (upsert users)
-  const userUpserts = emails.map((emailObj) =>
-    db.user.upsert({
-      where: { email: emailObj.email },
-      create: {
-        email: emailObj.email,
-        name: "Default Name", // Provide default name or handle accordingly
-        role: "USER", // Default role, adjust as necessary
-      },
-      update: {}, // No updates needed for existing users
-    })
-  );
-
   try {
-    await Promise.all(userUpserts);
-  } catch (error) {
-    console.error("Error upserting users:", error);
-    return { error: "Failed to upsert users." };
-  }
+    // Perform user upsert and email association within a transaction
+    await db.$transaction(async (prisma) => {
+      for (const emailObj of emails) {
+        await prisma.user.upsert({
+          where: { email: emailObj.email },
+          create: {
+            email: emailObj.email,
+            name: "Default Name",
+            role: "USER",
+            organizationId,
+          },
+          update: {},
+        });
 
-  // Step 2: Associate emails with organization (batch create OrganizationEmail)
-  try {
-    await db.$transaction(
-      emails.map((emailObj) =>
-        db.organizationEmail.create({
+        await prisma.organizationEmail.create({
           data: {
             email: emailObj.email,
             organizationId,
           },
-        })
-      )
-    );
+        });
+      }
+    });
+
+    // Send verification emails asynchronously outside the transaction
+    emails.forEach(async (emailObj) => {
+      const { token } = await generateVerificationTokenOrganization(emailObj.email);
+      await sendVerificationEmailOrganization(emailObj.email, token);
+    });
+
     return {
-      success:
-        "Emails and users successfully associated with the organization.",
+      success: "Emails and users successfully associated with the organization and verification emails sent.",
     };
   } catch (error) {
-    if (
-      error instanceof PrismaClientKnownRequestError &&
-      error.code === "P2002"
-    ) {
-      // Handle unique constraint violation (email already associated)
-      return {
-        error:
-          "One or more emails are already associated with an organization.",
-      };
-    }
-    console.error("Error associating emails with organization:", error);
-    return { error: "Failed to associate emails with the organization." };
+    console.error("Error processing emails for organization:", error);
+    return { error: "Failed to process emails for the organization." };
   }
 };
