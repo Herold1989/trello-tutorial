@@ -115,3 +115,16 @@ export const EmailTextareaSchema = z.object({
     message: "Please enter valid email addresses, separated by commas or spaces.",
   }),
 });
+
+export const NewPasswordAndNameSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  password: z.string().min(6, "Password must be at least 6 characters long"),
+  token: z.string(), // Ensure this is included and matches the server's expectations
+});
+
+// Assuming this schema is adjusted to include `name` and `password` for updates
+export const UpdateUserSchema = z.object({
+  token: z.string(),
+  name: z.string().min(1, "Name is required"),
+  password: z.string().min(6, "Password must be at least 6 characters long"),
+});

@@ -27,8 +27,7 @@ import { FormSuccess } from "@/components/form-success";
 import { createOrg } from "@/actions/create-org";
 import { addEmailsToOrganization } from "@/actions/add-members";
 import { Textarea } from "../ui/textarea";
-import { Info } from 'lucide-react';
-
+import { Info } from "lucide-react";
 
 const createSlug = (name: string) =>
   name
@@ -38,6 +37,8 @@ const createSlug = (name: string) =>
 
 export const OrganizationList = () => {
   const [organizationCreated, setOrganizationCreated] = useState(false);
+  const [emailsAddedSuccess, setEmailsAddedSuccess] = useState(false);
+
   const [organizationId, setOrganizationId] = useState("");
   const [error, setError] = useState<string | undefined>("");
   const [success, setSuccess] = useState<string | undefined>("");
@@ -99,20 +100,20 @@ export const OrganizationList = () => {
       emails: emailsArray.map((email) => ({ email })),
     };
 
-    console.log("Data sent to server:", submissionData);
-
     const response = await addEmailsToOrganization(submissionData);
     if (response.error) {
       setError(response.error);
     } else if (response.success) {
       setSuccess(response.success);
       formEmails.reset(); // Reset the form to clear the textarea
+      setEmailsAddedSuccess(true);
     }
   };
 
   return (
     <CardWrapper
       headerLabel={
+        emailsAddedSuccess ? "Emails succesfully added to organization" :
         organizationCreated
           ? "Step 2: Add Your Email / Invite Members"
           : "Step 1: Create Your Organization"
@@ -120,7 +121,11 @@ export const OrganizationList = () => {
       backButtonLabel="Already have an organization?"
       backButtonHref="/auth/login"
     >
-      {!organizationCreated ? (
+      {emailsAddedSuccess ? (
+        <div className="text-center p-4">
+          <p>Check your email and verify your profile.</p>
+        </div>
+      ) : !organizationCreated ? (
         <Form {...formOrg}>
           <form
             onSubmit={formOrg.handleSubmit(onSubmitOrganization)}
@@ -160,7 +165,7 @@ export const OrganizationList = () => {
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger>
-                    <Info size={16} />
+                      <Info size={16} />
                     </TooltipTrigger>
                     <TooltipContent>
                       <p>Your individual organization URL</p>

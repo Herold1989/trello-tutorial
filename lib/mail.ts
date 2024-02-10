@@ -38,7 +38,7 @@ export const sendVerificationEmail = async (email: string, token: string) => {
 };
 
 export const sendVerificationEmailOrganization = async (email: string, token: string) => {
-  const confirmLink = `${domain}/auth/new-verification?token=${token}`;
+  const confirmLink = `${domain}/auth/new-verification-organization?token=${token}`;
 
   await resend.emails.send({
     from: "mail@heroldesteves.de",
