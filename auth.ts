@@ -70,6 +70,8 @@ export const {
         session.user.isTwoFactorEnabled = token.isTwoFactorEnabled as boolean;
         session.user.company = token.company as string;
         session.user.isOAuth = token.isOAuth as boolean;
+        session.user.organizationId = token.organizationId as string | undefined;
+
       }
 
       if (token.role && session.user) {
@@ -96,6 +98,7 @@ export const {
       token.role = existingUser.role;
       token.isTwoFactorEnabled = existingUser.isTwoFactorEnabled;
       token.company = existingUser.company;
+      token.organizationId = existingUser.organizationId;
 
       return token;
     },

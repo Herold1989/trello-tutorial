@@ -4,7 +4,7 @@ import * as z from "zod";
 import { signIn } from "@/auth";
 
 import { LoginSchema } from "@/schemas";
-import { DEFAULT_LOGIN_REDIRECT } from "@/routes";
+import { DEFAULT_LOGIN_ORGANIZATION_REDIRECT, DEFAULT_LOGIN_REDIRECT } from "@/routes";
 import { AuthError } from "next-auth";
 import { generateVerificationToken, generateTwoFactorToken } from "@/lib/tokens";
 import { getUserByEmail } from "@/data/user";
@@ -96,11 +96,14 @@ export const login = async (values: z.infer<typeof LoginSchema>, callbackUrl?: s
     }
   }
 
+  const LOGIN = existingUser.organizationId ? (callbackUrl ||DEFAULT_LOGIN_ORGANIZATION_REDIRECT) : (callbackUrl || DEFAULT_LOGIN_REDIRECT);
+
+
   try {
     await signIn("credentials", {
       email,
       password,
-      redirectTo: callbackUrl || DEFAULT_LOGIN_REDIRECT,
+      redirectTo: callbackUrl || LOGIN,
     });
   } catch (error) {
     if (error instanceof AuthError) {

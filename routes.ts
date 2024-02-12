@@ -39,4 +39,7 @@ export const apiAuthPrefix = "/api/auth"
  * @type {string}
  */
 
-export const DEFAULT_LOGIN_REDIRECT = "/settings"
+//export const DEFAULT_LOGIN_REDIRECT = "/settings"
+export const DEFAULT_LOGIN_REDIRECT = "/user/:id"
+
+export const DEFAULT_LOGIN_ORGANIZATION_REDIRECT = "/organization/:id"
