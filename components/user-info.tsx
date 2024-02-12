@@ -1,7 +1,6 @@
 import { ExtendedUser } from "@/next-auth";
 import { Card, CardContent, CardHeader } from "./ui/card";
 import { Badge } from "./ui/badge";
-import { getOrganizationById } from "@/data/organization";
 
 interface UserInfoProps {
   user?: ExtendedUser;
@@ -9,13 +8,12 @@ interface UserInfoProps {
 }
 
 export const UserInfo = ({ user, label }: UserInfoProps) => {
-  
-  const organizationName = getOrganizationById(user?.organizationId) 
-
   return (
     <Card className="w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl shadow-md">
       <CardHeader>
-        <p className="text-xl sm:text-2xl md:text-3xl font-semibold text-center">{label}</p>
+        <p className="text-xl sm:text-2xl md:text-3xl font-semibold text-center">
+          {label}
+        </p>
       </CardHeader>
       <CardContent className="space-y-3 md:space-y-4">
         <div className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">

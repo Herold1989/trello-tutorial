@@ -70,7 +70,7 @@ export const {
         session.user.isTwoFactorEnabled = token.isTwoFactorEnabled as boolean;
         session.user.company = token.company as string;
         session.user.isOAuth = token.isOAuth as boolean;
-        session.user.organizationId = token.organizationId as string | undefined;
+        session.user.organizationId = token.organizationId as string;
 
       }
 

@@ -10,7 +10,7 @@ export const getOrganizationByName = async (organization: string) => {
     }
   };
   
-  export const getOrganizationById = async (id: string | undefined) => {
+  export const getOrganizationById = async (id: string) => {
     try {
       const organization = await db.organization.findUnique({ where: { id } });
       return organization;
