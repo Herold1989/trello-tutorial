@@ -19,7 +19,6 @@ import { FormSuccess } from "@/components/form-success";
 import { newPasswordAndName } from "@/actions/new-password-and-name";
 import { useSearchParams } from "next/navigation";
 import { NewPasswordAndNameSchema } from "@/schemas";
-import Link from "next/link";
 
 export const NewPasswordAndNameForm = () => {
   const searchParams = useSearchParams();

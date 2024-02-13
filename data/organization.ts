@@ -1,9 +1,9 @@
 import { db } from "@/lib/db";
 
-export const getOrganizationByName = async (organization: string) => {
+export const getOrganizationByName = async (organizationName: string) => {
     try {
-      const organizationName = await db.organization.findUnique({ where: { organization } });
-      return organizationName;
+      const organization = await db.organization.findUnique({ where: { organizationName } });
+      return organization;
     } catch (error) {
       console.error("Failed to fetch organization:", error);
       return null;

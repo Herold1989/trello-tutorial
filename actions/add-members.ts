@@ -1,5 +1,5 @@
 "use server";
-import Prisma, * as PrismaScope from "@prisma/client";
+
 import * as z from "zod";
 import { EmailSubmissionSchema } from "@/schemas";
 import { db } from "@/lib/db";

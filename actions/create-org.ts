@@ -2,7 +2,6 @@
 import * as z from "zod";
 import { db } from "@/lib/db";
 import { OrganizationSchema } from "@/schemas";
-import { getOrganizationByName } from "@/data/organization";
 
 interface CreateOrgResponse {
   error?: string;
@@ -20,11 +19,11 @@ export const createOrg = async (
     return { error: "Invalid Fields" };
   }
 
-  const { organization, slug } = validatedFields.data;
+  const { organizationName, slug } = validatedFields.data;
   // Check if user already exists
   const existingOrganization = await db.organization.findFirst({
     where: {
-      OR: [{ organization }, { slug }],
+      OR: [{ organizationName }, { slug }],
     },
   });
 
@@ -34,7 +33,7 @@ export const createOrg = async (
 
   const createOrganization = await db.organization.create({
     data: {
-      organization,
+      organizationName,
       slug, // Include the slug in the data for creation
     },
   });

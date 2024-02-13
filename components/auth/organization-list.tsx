@@ -59,9 +59,9 @@ export const OrganizationList = () => {
 
   useEffect(() => {
     const subscription = formOrg.watch((value, { name }) => {
-      if (name === "organization") {
+      if (name === "organizationName") {
         // Ensure value.organization is treated as a string, even if it's undefined
-        const organizationName = value.organization || "";
+        const organizationName = value.organizationName || "";
         const newSlug = createSlug(organizationName);
         setSlugUrl(newSlug);
         // Optionally, directly set the slug value in the form if needed for submission
@@ -134,7 +134,7 @@ export const OrganizationList = () => {
             <div className="space-y-4">
               <FormField
                 control={formOrg.control}
-                name="organization"
+                name="organizationName"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Organization Name</FormLabel>

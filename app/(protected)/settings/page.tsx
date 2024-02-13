@@ -15,7 +15,7 @@ import {
 import { useTransition, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { DeleteUserSchema, SettingsSchema } from "@/schemas";
+import { SettingsSchema } from "@/schemas";
 import {
   Form,
   FormField,
