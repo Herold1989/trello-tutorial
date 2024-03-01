@@ -96,7 +96,7 @@ export const login = async (values: z.infer<typeof LoginSchema>, callbackUrl?: s
     }
   }
 
-  const LOGIN = existingUser.organizationId ? (callbackUrl ||DEFAULT_LOGIN_ORGANIZATION_REDIRECT) : (callbackUrl || DEFAULT_LOGIN_REDIRECT);
+  const LOGIN = existingUser.organizationId ? (callbackUrl || DEFAULT_LOGIN_ORGANIZATION_REDIRECT) : (callbackUrl || DEFAULT_LOGIN_REDIRECT);
 
 
   try {
